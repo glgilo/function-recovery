@@ -38,6 +38,7 @@ class AverageSmoothnessLearner:
         self.net = []
 
     def train(self, xs=None, ys=None):
+        print("Start train()")
         # if received new data:
         if xs is not None and ys is not None:
             self.xs = xs
@@ -51,8 +52,14 @@ class AverageSmoothnessLearner:
 
         # build epsilon net:
         self.net = buildNet(points, self.epsilon)
+        print("Finished train")
 
     def PMSE(self, x):
+        """
+        Predict y, based on the paper
+        :param x: input x
+        :return: prediction y
+        """
         R_max = -1
         u_star = Point(0, 0)
         v_star = Point(0, 0)
@@ -74,6 +81,12 @@ def calculateR(u, v):
 
 
 def throwEpsilon(points, epsilon):
+    """
+    Throw epsilon * (size of points set) from all points, with the highest R_X values
+    :param points: points after the smoothing phase
+    :param epsilon: percentage of highest R_x values out of the points list
+    :return: new set of points, size = (1 - epsilon) * n
+    """
     for u in points:
         r_max = -1
         for v in points:
