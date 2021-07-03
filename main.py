@@ -28,109 +28,38 @@
 #         return x
 import math
 import operator
+from utilities import generate_experiment
+from averagesmoothnesslearner import AverageSmoothnessLearner
+from averagesmoothnesslearner import *
 
+# [xtrain, ytrain], [xtest, ytest] = utilities.generate_experiment(0, 32)
+# print(xtrain, ytrain, xtest, ytest)
+# utilities.test_linear_program()
 
-class Point():
-    def __init__(self,x , y):
-        self.x = x
-        self.y = y
-
-    def setR(self, R):
-        self.R = R
-
-    def __eq__(self, other):
-        if self.x == other.x and self.y == other.y:
-            return True
-        return False
-
-    def __lt__(self, other):
-        return self.R < other.R
-
-    def calcDist(self, other):
-        return math.dist([self.x,self.y], [other.x, other.y])
-
-
-def calculateR(u, v):
-    if u.x == v.x:
-        return 0
-    return (u.y - v.y)/ (u.x - v.x) # abs?
-
-
-def throwEpsilon(points, epsilon):
-    for point1 in points:
-        max = -1
-        for point2 in points:
-            if(point1 != point2):
-                R = calculateR(point1,point2)
-                if R > max:
-                    max = R
-                    point1.setR(R)
-    points.sort()
-    new_points_set = []
-    for i in range(0, round(len(points)*(1-epsilon))):
-        new_points_set.append(points[i])
-    return new_points_set
-
-
-def buildNet(points, epsilon):
-    net = []
-    for point in points:
-        covered = False
-        for net_point in net:
-            if point.calcDist(net_point) < epsilon:
-                covered = True
-                break
-        if not covered:
-            net.append(point)
-    return net
-
-
-def calculate_Rx(x, u, v):
-    return (v.y - u.y)/(math.dist([x], [u.x]) + math.dist([x], [v.x])) #abs?
-
-
-def fx(x, u, v):
-    return u.y + calculate_Rx(x, u, v)*math.dist([x], [u.x])
-
-
-def PMSE(x, points):
-    maxR = -1
-    max_point1 = Point(0,0)
-    max_point2 = Point(0, 0)
-    for point1 in points:
-        for point2 in points:
-            if point1 != point2:
-                tempR = calculate_Rx(x, point1, point2)
-                if tempR > maxR:
-                    maxR = tempR
-                    max_point1 = point1
-                    max_point2 = point2
-    return fx(x, max_point1, max_point2)
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    A = Point(1,2)
-    B = Point(3, 4)
-    C = Point(1, 7)
-    D = Point(13, 5)
-    E = Point(2, 23)
-    pointss = []
-    pointss.append(A)
-    pointss.append(B)
-    pointss.append(C)
-    pointss.append(D)
-    pointss.append(E)
-    print(pointss)
-    new = throwEpsilon(pointss,0.2)
-    for point in new:
-        print(point.x, point.y)
-    new_new = buildNet(new, 5)
+    test_learner()
 
-    for point in new_new:
-        print(point.x, point.y)
-    print(PMSE(2,new_new))
-
+    # A = Point(1,2)
+    # B = Point(3, 4)
+    # C = Point(1, 7)
+    # D = Point(13, 5)
+    # E = Point(2, 23)
+    # pointss = []
+    # pointss.append(A)
+    # pointss.append(B)
+    # pointss.append(C)
+    # pointss.append(D)
+    # pointss.append(E)
+    # print(pointss)
+    # new = throwEpsilon(pointss,0.2)
+    # for point in new:
+    #     print(point.x, point.y)
+    # new_new = buildNet(new, 5)
+    #
+    # for point in new_new:
+    #     print(point.x, point.y)
+    # print(PMSE(2,new_new))
+    #
 
     # net = Net()
     # print(net)
