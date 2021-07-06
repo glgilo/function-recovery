@@ -37,7 +37,7 @@ from averagesmoothnesslearner import *
 # utilities.test_linear_program()
 
 if __name__ == '__main__':
-    test_learner()
+    test_learner(200)
 
     # A = Point(1,2)
     # B = Point(3, 4)
