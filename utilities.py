@@ -59,9 +59,11 @@ def smooth_input(xs, ys, L):
     :return: A list of points after smoothing (e.g. (x, z) for each (x,y)) or terminate if no solution exist
     """
     n = len(xs)
-    obj = [1 for i in range(n)]
-    for i in range(2 * n):
-        obj.append(0)
+
+
+    # obj = [1 for i in range(n)]
+    # for i in range(2 * n):
+    #     obj.append(0)
 
     # Create the model
     model = LpProblem(name="small-problem", sense=LpMinimize)
@@ -91,11 +93,11 @@ def smooth_input(xs, ys, L):
                 model += (zs[j] - zs[i] - abs(xs[i] - xs[j]) * ls[i] <= 0, "C3.b_{}_{}".format(i, j))
 
     if model.solve() == 1:
-        print("found solution for the linear program")
+        print("------------------------------------\nFound solution for the linear program\n------------------------------------\n")
         return [[xs[i], zs[i].value()] for i in range(n)]
         # return [zi.value() for zi in zs], [li.value() for li in ls]
 
-    print("linear program: no solution found")
+    print("Linear program: no solution found")
     exit(1)
     return -1
 
@@ -125,6 +127,7 @@ def smooth_input(xs, ys, L):
 
 def test_linear_program():
     xs, ys = create_sin_dataset(5)
+    print("Start train()")
     # zs, ls = smooth_input(xs, ys, 100)
     points = smooth_input(xs, ys, 100)
     print(points)

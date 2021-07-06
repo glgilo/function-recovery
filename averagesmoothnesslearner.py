@@ -3,7 +3,7 @@ import math
 import utilities
 
 
-class Point():
+class Point:
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -38,7 +38,6 @@ class AverageSmoothnessLearner:
         self.net = []
 
     def train(self, xs=None, ys=None):
-        print("Start train()")
         # if received new data:
         if xs is not None and ys is not None:
             self.xs = xs
@@ -72,6 +71,28 @@ class AverageSmoothnessLearner:
                         u_star = u
                         v_star = v
         return fx(x, u_star, v_star)
+
+    def predict(self, xtest, ytest):
+        predictions = []
+        for x, y in zip(xtest, ytest):
+            predictions.append(self.PMSE(x))
+
+        return predictions
+
+    def calc_loss(self, predictions, label):
+        total_error = 0
+        for p, l in zip(predictions, label):
+            error = abs(p - l)
+            total_error += error
+            print("predicted=", p, " label=", l, "error=", error)
+
+        print("\n---------------------------------\nTotal error = {}\nAverage erro = {} "
+              "\n---------------------------------\n".format(total_error, (total_error / len(predictions))))
+        return total_error
+
+    def test(self, xtest, ytest):
+        predictions = self.predict(xtest, ytest)
+        self.calc_loss(predictions, ytest)
 
 
 def calculateR(u, v):
@@ -123,10 +144,10 @@ def fx(x, u, v):
     return u.y + calculate_Rx(x, u, v) * math.dist([x], [u.x])
 
 
-def test_learner():
-    [xtrain, ytrain], [xtest, ytest] = utilities.generate_experiment(0, 320)
-    learner = AverageSmoothnessLearner(10, 0.1, xtrain, ytrain)
+def test_learner(n=32, L=10, epsilon=0.1):
+    print('Test learner for n={}, L={} epsilon={}:'.format(n, L, epsilon))
+    [xtrain, ytrain], [xtest, ytest] = utilities.generate_experiment(0, n, 0.001)
+    learner = AverageSmoothnessLearner(L, epsilon, xtrain, ytrain)
     learner.train()
-    for x, y in zip(xtest, ytest):
-        res = learner.PMSE(x)
-        print("res=", res, " exp=", y, "dist=", abs(res - y))
+    learner.test(xtest, ytest)
+
