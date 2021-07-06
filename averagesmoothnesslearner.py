@@ -144,9 +144,9 @@ def fx(x, u, v):
     return u.y + calculate_Rx(x, u, v) * math.dist([x], [u.x])
 
 
-def test_learner(n=32, L=10, epsilon=0.1):
-    print('Test learner for n={}, L={} epsilon={}:'.format(n, L, epsilon))
-    [xtrain, ytrain], [xtest, ytest] = utilities.generate_experiment(0, n, 0.001)
+def test_learner(n=32, L=10, epsilon=0.1, std_error=0.001):
+    print('Test learner for n={}, L={} epsilon={} std_error:'.format(n, L, epsilon, std_error))
+    [xtrain, ytrain], [xtest, ytest] = utilities.generate_experiment(0, n, std_error)
     learner = AverageSmoothnessLearner(L, epsilon, xtrain, ytrain)
     learner.train()
     learner.test(xtest, ytest)
