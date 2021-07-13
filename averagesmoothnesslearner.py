@@ -1,5 +1,7 @@
 import math
-
+import time
+from matplotlib import pyplot as plt
+import numpy as np
 import utilities
 
 
@@ -46,7 +48,7 @@ class AverageSmoothnessLearner:
         # Linear program:
         smoothed_points = utilities.smooth_input(self.xs, self.ys, self.L)
 
-        # throw epsilon precent points, store with new y values (e.g. zs)
+        # throw epsilon percent points, store with new y values (e.g. zs)
         points = throwEpsilon([Point(p[0], p[1]) for p in smoothed_points], self.epsilon)
 
         # build epsilon net:
@@ -82,17 +84,36 @@ class AverageSmoothnessLearner:
     def calc_loss(self, predictions, label):
         total_error = 0
         for p, l in zip(predictions, label):
-            error = abs(p - l)
+            error = math.sqrt((p - l)**2)
             total_error += error
             print("predicted=", p, " label=", l, "error=", error)
 
-        print("\n---------------------------------\nTotal error = {}\nAverage erro = {} "
+        print("\n---------------------------------\nTotal error = {}\nAverage error = {} "
               "\n---------------------------------\n".format(total_error, (total_error / len(predictions))))
         return total_error
 
     def test(self, xtest, ytest):
+        t0 = time.time()
         predictions = self.predict(xtest, ytest)
-        self.calc_loss(predictions, ytest)
+        predict_time = time.time() - t0
+        print("ASL prediction for %d inputs in %.3f s\n"
+              % (len(xtest), predict_time))
+
+        self.plot_predictions(xtest, predictions)
+        return self.calc_loss(predictions, ytest)
+
+    def plot_predictions(self, xtest, preds):
+        # x = np.arange(0, 1, 0.05)
+        x = np.linspace(0, 1)
+        plt.scatter(self.xs, self.ys, c='b', label='Train sample')
+        plt.plot(xtest, preds, c='r', label='Average smoothness learner')
+        plt.scatter(xtest, utilities.func_sin(xtest), c='g', label='Test sample')
+        plt.plot(x, utilities.func_sin(x), c='y', label='sin(2Pi*x)')
+        plt.xlabel('x - axis')
+        plt.ylabel('y - axis')
+        plt.title(' ASL n={}, L={} epsilon={}'.format(len(self.xs), self.L, self.epsilon))
+        plt.legend()
+        plt.show()
 
 
 def calculateR(u, v):
@@ -144,10 +165,9 @@ def fx(x, u, v):
     return u.y + calculate_Rx(x, u, v) * math.dist([x], [u.x])
 
 
-def test_learner(n=32, L=10, epsilon=0.1, std_error=0.001):
+def test_learner(n=32, L=10, epsilon=0.1, std_error=0.001, func_type=0):
     print('Test learner for n={}, L={} epsilon={} std_error:'.format(n, L, epsilon, std_error))
-    [xtrain, ytrain], [xtest, ytest] = utilities.generate_experiment(0, n, std_error)
+    [xtrain, ytrain], [xtest, ytest] = utilities.generate_experiment(func_type, n, std_error)
     learner = AverageSmoothnessLearner(L, epsilon, xtrain, ytrain)
     learner.train()
     learner.test(xtest, ytest)
-

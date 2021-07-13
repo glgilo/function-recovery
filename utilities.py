@@ -6,27 +6,29 @@ import pulp
 from pulp import LpMinimize, LpProblem, LpStatus, lpSum, LpVariable
 
 
-def func_sign(x, std_noise):
+def func_sign(x, std_noise=0):
     return np.sign(np.sin(2 * pi * x)) + std_noise * random.rand()
 
 
-def func_sin(x, std_noise):
+def func_sin(x, std_noise=0):
     return np.sin(2 * pi * x) + std_noise * random.random()
 
 
 def create_sign_dataset(n, std_noise=0):
-    xs = random.randn(n)
+    xs = random.random(n)
+    xs.sort()
     ys = [func_sign(x, std_noise) for x in xs]
     return xs, ys
 
 
 def create_sin_dataset(n, std_noise=0):
-    xs = random.randn(n)
+    xs = random.random(n)
+    xs.sort()
     ys = [func_sin(x, std_noise) for x in xs]
     return xs, ys
 
 
-def generate_experiment(func_type, n, std_noise=0.1):
+def generate_experiment(func_type=0, n=32, std_noise=0.1):
     """
         :param std_noise: std of noise around func
         :param func_type: 0 = sin, 1 = sign
@@ -69,14 +71,14 @@ def smooth_input(xs, ys, L):
     model = LpProblem(name="small-problem", sense=LpMinimize)
     ws = [LpVariable(name="w_{}".format(i), lowBound=0, upBound=1) for i in range(n)]
     ls = [LpVariable(name="L_{}".format(i), lowBound=0) for i in range(n)]
-    zs = [LpVariable(name="z_{}".format(i), lowBound=0, upBound=1) for i in range(n)]
+    zs = [LpVariable(name="z_{}".format(i)) for i in range(n)]
 
     # objective
     model += lpSum(ws)
 
     # constraint 1:
     # sum of Li <= L
-    model += (lpSum(ls) <= L, "sum of Li <= L")
+    model += (lpSum(ls) <= L*n, "sum of Li <= L")
 
     # Constraint 2:
     # w_i >= |z_i - y_i|
@@ -126,7 +128,7 @@ def smooth_input(xs, ys, L):
 # end
 
 def test_linear_program():
-    xs, ys = create_sin_dataset(5)
+    xs, ys = create_sin_dataset(32)
     print("Start train()")
     # zs, ls = smooth_input(xs, ys, 100)
     points = smooth_input(xs, ys, 100)
