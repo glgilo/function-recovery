@@ -109,10 +109,10 @@ def calc_squared_loss(predictions, label):
     for p, l in zip(predictions, label):
         error = math.sqrt((p - l) ** 2)
         total_error += error
-        print("predicted=", p, " label=", l, "error=", error)
+        # print("predicted=", p, " label=", l, "error=", error)
 
-    print("\n---------------------------------\nTotal error = {}\nAverage error = {} "
-          "\n---------------------------------\n".format(total_error, (total_error / len(predictions))))
+    # print("\n---------------------------------\nTotal error = {}\nAverage error = {} "
+    #       "\n---------------------------------\n".format(total_error, (total_error / len(predictions))))
     return total_error
 
 

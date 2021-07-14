@@ -5,6 +5,10 @@ import numpy as np
 import utilities
 from utilities import calc_squared_loss
 
+import os
+import imageio
+
+
 class Point:
     def __init__(self, x, y):
         self.x = x
@@ -53,7 +57,7 @@ class AverageSmoothnessLearner:
 
         # build epsilon net:
         self.net = buildNet(points, self.epsilon)
-        print("Finished train")
+        print("Finished train L={}".format(self.L))
 
     def PMSE(self, x):
         """
@@ -85,22 +89,27 @@ class AverageSmoothnessLearner:
         t0 = time.time()
         predictions = self.predict(xtest, ytest)
         predict_time = time.time() - t0
-        print("ASL prediction for %d inputs in %.3f s\n"
-              % (len(xtest), predict_time))
+        # print("ASL prediction for %d inputs in %.3f s\n"
+        #       % (len(xtest), predict_time))
 
-        self.plot_predictions(xtest, predictions)
-        return calc_squared_loss(predictions, ytest)
+        # self.plot_predictions(xtest, predictions)
+        return predictions, calc_squared_loss(predictions, ytest)
 
-    def plot_predictions(self, xtest, preds):
+    def plot_predictions(self, xtest, ytest, preds, func_type=0):
+        # set function to desired func
+        func = utilities.func_sin
+        if func_type == 1:
+            func = utilities.func_sign
+
         # x = np.arange(0, 1, 0.05)
-        x = np.linspace(0, 1)
-        plt.scatter(self.xs, self.ys, c='b', label='Train sample')
-        plt.plot(xtest, preds, c='r', label='Average smoothness learner')
-        plt.scatter(xtest, utilities.func_sin(xtest), c='g', label='Test sample')
-        plt.plot(x, utilities.func_sin(x), c='y', label='sin(2Pi*x)')
+        x = np.linspace(0, 1, 100)
+        plt.scatter(self.xs, self.ys, c='b', marker='x', label='Train sample')
+        plt.plot(xtest, preds, c='k', label='Average smoothness learner')
+        plt.scatter(xtest, ytest, c='g', marker='s', label='Test sample')
+        plt.plot(x, func(x), c='y', label='sin(2Pi*x)')
         plt.xlabel('x - axis')
         plt.ylabel('y - axis')
-        plt.title(' ASL n={}, L={} epsilon={}'.format(len(self.xs), self.L, self.epsilon))
+        plt.title('ASL n={}, L={} epsilon={}'.format(len(self.xs), self.L, self.epsilon))
         plt.legend()
         plt.show()
 
@@ -108,7 +117,7 @@ class AverageSmoothnessLearner:
 def calculateR(u, v):
     if u.x == v.x:
         return 0
-    return (u.y - v.y) / (u.x - v.x)  # abs?
+    return abs((u.y - v.y) / (u.x - v.x))  # abs?
 
 
 def throwEpsilon(points, epsilon):
@@ -154,9 +163,75 @@ def fx(x, u, v):
     return u.y + calculate_Rx(x, u, v) * math.dist([x], [u.x])
 
 
-def test_learner(n=32, L=10, epsilon=0.1, std_error=0.001, func_type=0):
+def demo_test_learner(n=32, L=10, epsilon=0.1, std_error=0.001, func_type=0):
     print('Test learner for n={}, L={} epsilon={} std_error:'.format(n, L, epsilon, std_error))
     [xtrain, ytrain], [xtest, ytest] = utilities.generate_experiment(func_type, n, std_error)
     learner = AverageSmoothnessLearner(L, epsilon, xtrain, ytrain)
     learner.train()
-    learner.test(xtest, ytest)
+    predictions, squared_loss = learner.test(xtest, ytest)
+    learner.plot_predictions(xtest, ytest, predictions, func_type)
+
+    return predictions, squared_loss
+
+
+def create_asl_fig(L, epsilon, filenames, preds, xtrain, ytrain, xtest, ytest, func_type=0):
+    # set function to desired func
+    func = utilities.func_sin
+    if func_type == 1:
+        func = utilities.func_sign
+
+    x = np.linspace(0, 1, 100)
+    plt.scatter(xtrain, ytrain, c='b', marker='x', label='Train sample')
+    plt.plot(xtest, preds, c='k', label='Average smoothness learner')
+    plt.scatter(xtest, ytest, c='g', marker='s', label='Test sample')
+    plt.plot(x, func(x), c='r', label='sin(2Pi*x)')
+    plt.xlabel('x - axis')
+    plt.ylabel('y - axis')
+    plt.title(' ASL n={}\nL={} epsilon={}'.format(len(xtrain), L, epsilon))
+    plt.legend()
+
+    filename = f'images/asl_frame_{L}.png'
+    for i in range(5):
+        filenames.append(filename)
+    # save img
+    plt.savefig(filename)
+    plt.close()
+
+
+def generate_asl_gif(filenames):
+    # Build GIF
+    print('Creating ASL gif\n')
+    with imageio.get_writer('asl.gif', mode='I') as writer:
+        for filename in filenames:
+            image = imageio.imread(filename)
+            writer.append_data(image)
+    print('Gif asl saved\n')
+    print('Removing Images\n')
+    # Remove files
+    for filename in set(filenames):
+        os.remove(filename)
+    print('DONE\n')
+
+
+def asl_experiment(xtrain, ytrain, xtest, ytest, epsilon=0.1, func_type=0):
+    filenames = []
+    asl_best_result = {'L': -1, 'xtrain': xtrain, 'ytrain': ytrain, 'xtest': xtest, 'ytest': ytest,
+                       'predictions': [], 'squared_loss': math.inf}
+
+    for L in np.arange(1, 11, 1):
+        learner = AverageSmoothnessLearner(L, epsilon, xtrain, ytrain)
+        learner.train()
+        predictions, squared_loss = learner.test(xtest, ytest)
+
+        create_asl_fig(L, epsilon, filenames, predictions, xtrain, ytrain, xtest, ytest, func_type)
+
+        # update optimal result
+        if squared_loss < asl_best_result['squared_loss']:
+            asl_best_result = {'L': L, 'epsilon': epsilon, 'xtrain': xtrain, 'ytrain': ytrain, 'xtest': xtest,
+                               'ytest': ytest,
+                               'predictions': predictions, 'squared_loss': squared_loss}
+
+    print('Charts saved\n')
+    generate_asl_gif(filenames)
+
+    return asl_best_result
