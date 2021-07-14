@@ -3,7 +3,7 @@ import time
 from matplotlib import pyplot as plt
 import numpy as np
 import utilities
-
+from utilities import calc_squared_loss
 
 class Point:
     def __init__(self, x, y):
@@ -81,17 +81,6 @@ class AverageSmoothnessLearner:
 
         return predictions
 
-    def calc_loss(self, predictions, label):
-        total_error = 0
-        for p, l in zip(predictions, label):
-            error = math.sqrt((p - l)**2)
-            total_error += error
-            print("predicted=", p, " label=", l, "error=", error)
-
-        print("\n---------------------------------\nTotal error = {}\nAverage error = {} "
-              "\n---------------------------------\n".format(total_error, (total_error / len(predictions))))
-        return total_error
-
     def test(self, xtest, ytest):
         t0 = time.time()
         predictions = self.predict(xtest, ytest)
@@ -100,7 +89,7 @@ class AverageSmoothnessLearner:
               % (len(xtest), predict_time))
 
         self.plot_predictions(xtest, predictions)
-        return self.calc_loss(predictions, ytest)
+        return calc_squared_loss(predictions, ytest)
 
     def plot_predictions(self, xtest, preds):
         # x = np.arange(0, 1, 0.05)

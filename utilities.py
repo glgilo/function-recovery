@@ -7,11 +7,11 @@ from pulp import LpMinimize, LpProblem, LpStatus, lpSum, LpVariable
 
 
 def func_sign(x, std_noise=0):
-    return np.sign(np.sin(2 * pi * x)) + std_noise * random.rand()
+    return np.sign(np.sin(2 * pi * x)) + std_noise * random.uniform(-1, 1)
 
 
 def func_sin(x, std_noise=0):
-    return np.sin(2 * pi * x) + std_noise * random.random()
+    return np.sin(2 * pi * x) + std_noise * random.uniform(-1, 1)
 
 
 def create_sign_dataset(n, std_noise=0):
@@ -62,7 +62,6 @@ def smooth_input(xs, ys, L):
     """
     n = len(xs)
 
-
     # obj = [1 for i in range(n)]
     # for i in range(2 * n):
     #     obj.append(0)
@@ -78,7 +77,7 @@ def smooth_input(xs, ys, L):
 
     # constraint 1:
     # sum of Li <= L
-    model += (lpSum(ls) <= L*n, "sum of Li <= L")
+    model += (lpSum(ls) <= L * n, "sum of Li <= L")
 
     # Constraint 2:
     # w_i >= |z_i - y_i|
@@ -95,13 +94,26 @@ def smooth_input(xs, ys, L):
                 model += (zs[j] - zs[i] - abs(xs[i] - xs[j]) * ls[i] <= 0, "C3.b_{}_{}".format(i, j))
 
     if model.solve() == 1:
-        print("------------------------------------\nFound solution for the linear program\n------------------------------------\n")
+        print(
+            "------------------------------------\nFound solution for the linear program\n------------------------------------\n")
         return [[xs[i], zs[i].value()] for i in range(n)]
         # return [zi.value() for zi in zs], [li.value() for li in ls]
 
     print("Linear program: no solution found")
     exit(1)
     return -1
+
+
+def calc_squared_loss(predictions, label):
+    total_error = 0
+    for p, l in zip(predictions, label):
+        error = math.sqrt((p - l) ** 2)
+        total_error += error
+        print("predicted=", p, " label=", l, "error=", error)
+
+    print("\n---------------------------------\nTotal error = {}\nAverage error = {} "
+          "\n---------------------------------\n".format(total_error, (total_error / len(predictions))))
+    return total_error
 
 
 # switch idata
@@ -137,6 +149,3 @@ def test_linear_program():
 
     exit(0)
     return 0
-
-
-
