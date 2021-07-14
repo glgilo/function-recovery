@@ -63,12 +63,12 @@ def run_krr_mlp(alpha, xtrain, ytrain, xtest, ytest):
     return krr_predictions, krr.score(xtest, ytest), mlp_predictions, mlp.score(xtest, ytest)
 
 
-def experiment_mlp_krr(xtrain, ytrain, xtest, ytest, func_type=0):
+def experiment_mlp_krr(xtrain, ytrain, xtest, ytest, regularisation_variables, func_type=0):
     filenames = []
     mlp_best_result = {'alpha': -1, 'xtrain': [], 'ytrain': [], 'xtest': [], 'ytest': [],'predictions': [], 'score': 0}
     krr_best_result = {'alpha': -1, 'xtrain': [], 'ytrain': [], 'xtest': [], 'ytest': [],'predictions': [], 'score': 0}
 
-    for alpha in np.arange(0, 0.0001, 0.000005):
+    for alpha in regularisation_variables:
         # [xtrain, ytrain], [xtest, ytest] = utilities.generate_experiment(0, n, std_noise)
 
         xtrain = np.array(xtrain).reshape(-1, 1)

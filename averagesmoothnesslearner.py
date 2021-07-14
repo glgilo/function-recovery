@@ -57,7 +57,7 @@ class AverageSmoothnessLearner:
 
         # build epsilon net:
         self.net = buildNet(points, self.epsilon)
-        print("Finished train L={}".format(self.L))
+        # print("Finished train L={}".format(self.L))
 
     def PMSE(self, x):
         """
@@ -213,12 +213,12 @@ def generate_asl_gif(filenames):
     print('DONE\n')
 
 
-def asl_experiment(xtrain, ytrain, xtest, ytest, epsilon=0.1, func_type=0):
+def asl_experiment(xtrain, ytrain, xtest, ytest, L_values=[], epsilon=0.1, func_type=0):
     filenames = []
     asl_best_result = {'L': -1, 'xtrain': xtrain, 'ytrain': ytrain, 'xtest': xtest, 'ytest': ytest,
                        'predictions': [], 'squared_loss': math.inf}
 
-    for L in np.arange(1, 11, 1):
+    for L in L_values:
         learner = AverageSmoothnessLearner(L, epsilon, xtrain, ytrain)
         learner.train()
         predictions, squared_loss = learner.test(xtest, ytest)

@@ -44,17 +44,23 @@ if __name__ == '__main__':
     # demo_test_learner(n=32, L=10, epsilon=0.1, std_error=0.1, func_type=1)
     # utilities.test_linear_program()
 
-    # set function as sin(2*pi*x), n = 32
+    # set function as:
+    #   0 := sin(2*pi*x), n = 32
+    #   1 := sign(sin(2*pi*x)), n = 32
     func_type = 0
     n = 32
     epsilon = 0.1
+
+    # Set variables values
+    L_values = np.arange(1, 11, 1)
+    regularisation_variables = np.arange(0, 0.0001, 0.000005)
 
     # generate sample
     [xtrain, ytrain], [xtest, ytest] = utilities.generate_experiment(func_type, n)
 
     # run experiments:
-    asl_best_result = asl_experiment(xtrain, ytrain, xtest, ytest, epsilon, func_type)
-    mlp_best_result, krr_best_result = experiment_mlp_krr(xtrain, ytrain, xtest, ytest, func_type)
+    asl_best_result = asl_experiment(xtrain, ytrain, xtest, ytest, L_values, epsilon, func_type)
+    mlp_best_result, krr_best_result = experiment_mlp_krr(xtrain, ytrain, xtest, ytest, regularisation_variables, func_type)
 
     # print and plot results
     compare_squared_loss()
