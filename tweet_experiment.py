@@ -68,8 +68,8 @@ def experiment_mlp_krr(xtrain, ytrain, xtest, ytest, regularisation_variables, f
     mlp_best_result = {'alpha': -1, 'xtrain': [], 'ytrain': [], 'xtest': [], 'ytest': [],'predictions': [], 'score': 0}
     krr_best_result = {'alpha': -1, 'xtrain': [], 'ytrain': [], 'xtest': [], 'ytest': [],'predictions': [], 'score': 0}
 
+    # for each alpha, run train & test, and save the optimal one (based on squared loss)
     for alpha in regularisation_variables:
-        # [xtrain, ytrain], [xtest, ytest] = utilities.generate_experiment(0, n, std_noise)
 
         xtrain = np.array(xtrain).reshape(-1, 1)
         ytrain = np.array(ytrain).reshape(-1, 1)
@@ -87,7 +87,8 @@ def experiment_mlp_krr(xtrain, ytrain, xtest, ytest, regularisation_variables, f
             mlp_best_result = {'alpha': alpha, 'xtrain': xtrain, 'ytrain': ytrain, 'xtest': xtest, 'ytest': ytest,
                                'predictions': mlp_predictions, 'score': mlp_score}
 
-    print('Charts saved\n')
+    # create gif for data visualisation
+    print('plots saved\n')
     generate_mlp_krr_gif(filenames)
 
     print("Best results:\nmlp: alpha={} score={}\nkrr: alpha={} score={}\n".format(mlp_best_result['alpha'],

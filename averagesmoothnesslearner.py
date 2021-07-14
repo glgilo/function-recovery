@@ -218,6 +218,7 @@ def asl_experiment(xtrain, ytrain, xtest, ytest, L_values=[], epsilon=0.1, func_
     asl_best_result = {'L': -1, 'xtrain': xtrain, 'ytrain': ytrain, 'xtest': xtest, 'ytest': ytest,
                        'predictions': [], 'squared_loss': math.inf}
 
+    # for each L, run train & test, and save the optimal one (based on squared loss)
     for L in L_values:
         learner = AverageSmoothnessLearner(L, epsilon, xtrain, ytrain)
         learner.train()
@@ -231,7 +232,8 @@ def asl_experiment(xtrain, ytrain, xtest, ytest, L_values=[], epsilon=0.1, func_
                                'ytest': ytest,
                                'predictions': predictions, 'squared_loss': squared_loss}
 
-    print('Charts saved\n')
+    # create gif for data visualisation
+    print('plots saved\n')
     generate_asl_gif(filenames)
 
     return asl_best_result
