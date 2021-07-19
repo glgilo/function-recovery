@@ -17,7 +17,7 @@ def plot_best_result():
     if func_type == 1:
         func = utilities.func_sign
 
-    x = np.linspace(0, 1, 100)
+    x = np.linspace(-1, 1, 100)
     # plt.scatter(xtrain, ytrain, c='b', marker='x', label='Train sample')
     # plt.scatter(xtest, ytest, c='g', marker='s', label='Test sample')
     plt.plot(xtest, mlp_best_result['predictions'], c='g', label='mlp')
@@ -53,8 +53,8 @@ if __name__ == '__main__':
     #  2. set n (default n=32)
     #  3. set L values and lambda values
 
-    func_type = 0
-    n = 100
+    func_type = 1
+    n = 32
     epsilon = 0.1
 
     # Set variables values

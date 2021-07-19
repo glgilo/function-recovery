@@ -15,14 +15,15 @@ def func_sin(x, std_noise=0):
 
 
 def create_sign_dataset(n, std_noise=0):
-    xs = random.random(n)
+    # xs = random.random(n)
+    xs = [random.uniform(-1, 1) for i in range(n)]
     xs.sort()
     ys = [func_sign(x, std_noise) for x in xs]
     return xs, ys
 
 
 def create_sin_dataset(n, std_noise=0):
-    xs = random.random(n)
+    xs = [random.uniform(-1, 1) for i in range(n)]
     xs.sort()
     ys = [func_sin(x, std_noise) for x in xs]
     return xs, ys
@@ -35,7 +36,7 @@ def generate_experiment(func_type=0, n=32, std_noise=0.1):
         :param n: dataset size
         :return: train & test
         """
-
+    std_noise = 0
     if func_type == 0:
         return create_sin_dataset(n, std_noise), create_sin_dataset(n)
 
@@ -114,30 +115,6 @@ def calc_squared_loss(predictions, label):
     # print("\n---------------------------------\nTotal error = {}\nAverage error = {} "
     #       "\n---------------------------------\n".format(total_error, (total_error / len(predictions))))
     return total_error
-
-
-# switch idata
-#
-# case 1
-# y = sin( 2 *p i *X) + std_noise * randn(n ,1);
-# ytest = sin( 2 *p i *Xtest);
-# case 2
-# y = sign(sin( 2 *p i *X)) + std_noise * randn(n ,1);
-# ytest = sign(sin( 2 *p i *Xtest));
-#
-# case 3
-# y = 4* abs(X - .25 - floor(X - .25) - 1 / 2) - 1 + std_noise * randn(n, 1);
-# ytest = 4 * abs(Xtest - .25 - floor(Xtest - .25) - 1 / 2) - 1;
-#
-# case
-# 4
-# y = 4 * abs(X - .25 - floor(X - .25) - 1 / 2) - 1 - 8 * (double(abs(X - 0.25) < .125). * (.125 - abs(X - 0.25))) - 8 * (
-#             double(abs(X + 0.75) < .125). * (.125 - abs(X + 0.75))) + std_noise * randn(n, 1);
-# ytest = 4 * abs(Xtest - .25 - floor(Xtest - .25) - 1 / 2) - 1 - 8 * (
-#             double(abs(Xtest - 0.25) < .125). * (.125 - abs(Xtest - 0.25))) - 8 * (
-#                     double(abs(Xtest + 0.75) < .125). * (.125 - abs(Xtest + 0.75)));
-#
-# end
 
 def test_linear_program():
     xs, ys = create_sin_dataset(32)

@@ -2,6 +2,7 @@ import time
 import array
 import numpy as np
 import utilities
+import sklearn as sk
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.neural_network import MLPRegressor
 import matplotlib.pyplot as plt
@@ -18,7 +19,7 @@ def create_mlp_krr_fig(alpha, filenames, krr_predictions, mlp_predictions, xtrai
     if func_type == 1:
         func = utilities.func_sign
 
-    x = np.linspace(0, 1, 100)
+    x = np.linspace(-1, 1, 100)
     plt.scatter(xtrain, ytrain, c='b', marker='x' , label='Train sample')
     plt.scatter(xtest, ytest, c='g', marker='s', label='Test sample')
     plt.plot(xtest, mlp_predictions, c='g', label='mlp')
@@ -60,6 +61,10 @@ def run_krr_mlp(alpha, xtrain, ytrain, xtest, ytest):
     mlp_predictions = mlp.predict(xtest).reshape(-1, 1)
     krr.fit(xtrain, ytrain)
     krr_predictions = krr.predict(xtest).reshape(-1, 1)
+
+    # ------- just debug --------
+    # sk.model_selection.KFold
+    # ---------------------------
     return krr_predictions, krr.score(xtest, ytest), mlp_predictions, mlp.score(xtest, ytest)
 
 

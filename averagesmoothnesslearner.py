@@ -180,7 +180,7 @@ def create_asl_fig(L, epsilon, filenames, preds, xtrain, ytrain, xtest, ytest, f
     if func_type == 1:
         func = utilities.func_sign
 
-    x = np.linspace(0, 1, 100)
+    x = np.linspace(-1, 1, 100)
     plt.scatter(xtrain, ytrain, c='b', marker='x', label='Train sample')
     plt.plot(xtest, preds, c='k', label='Average smoothness learner')
     plt.scatter(xtest, ytest, c='g', marker='s', label='Test sample')
