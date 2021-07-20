@@ -32,7 +32,7 @@ def create_mlp_krr_fig(alpha, filenames, krr_predictions, mlp_predictions, xtrai
     plt.legend()
     # plt.show()
     filename = f'images/tweet_frame_{alpha}.png'
-    for i in range(5):
+    for i in range(2):
         filenames.append(filename)
     # save img
     plt.savefig(filename)

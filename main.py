@@ -53,9 +53,9 @@ if __name__ == '__main__':
     #  2. set n (default n=32)
     #  3. set L values and lambda values
 
-    func_type = 1
-    n = 32
-    epsilon = 0.1
+    func_type = 0
+    n = 64
+    epsilon = 0.0001
 
     # Set variables values
     L_values = np.arange(1, 21, 1)
