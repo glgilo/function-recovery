@@ -213,25 +213,33 @@ def generate_asl_gif(filenames):
     print('DONE\n')
 
 
-def asl_experiment(xtrain, ytrain, xtest, ytest, L_values=[], epsilon=0.1, func_type=0):
+def asl_experiment(xlearn, ylearn, xvalid, yvalid, xtest, ytest, L_values=[], epsilon=0.1, func_type=0):
     filenames = []
-    asl_best_result = {'L': -1, 'xtrain': xtrain, 'ytrain': ytrain, 'xtest': xtest, 'ytest': ytest,
+    asl_best_result = {'L': -1, 'xtrain': xlearn, 'ytrain': ylearn, 'xtest': xvalid, 'ytest': yvalid,
                        'predictions': [], 'squared_loss': math.inf}
 
     # for each L, run train & test, and save the optimal one (based on squared loss)
     for L in L_values:
-        learner = AverageSmoothnessLearner(L, epsilon, xtrain, ytrain)
+        learner = AverageSmoothnessLearner(L, epsilon, xlearn, ylearn)
         learner.train()
-        predictions, squared_loss = learner.test(xtest, ytest)
+        predictions, squared_loss = learner.test(xvalid, yvalid)
 
-        create_asl_fig(L, epsilon, filenames, predictions, xtrain, ytrain, xtest, ytest, func_type)
+        create_asl_fig(L, epsilon, filenames, predictions, xlearn, ylearn, xvalid, yvalid, func_type)
 
         # update optimal result
         if squared_loss < asl_best_result['squared_loss']:
-            asl_best_result = {'L': L, 'epsilon': epsilon, 'xtrain': xtrain, 'ytrain': ytrain, 'xtest': xtest,
-                               'ytest': ytest,
+            asl_best_result = {'L': L, 'epsilon': epsilon, 'xtrain': xlearn, 'ytrain': ylearn, 'xtest': xvalid,
+                               'ytest': yvalid,
                                'predictions': predictions, 'squared_loss': squared_loss}
 
+    xcombine = xlearn + xvalid
+    ycombine = ylearn + yvalid
+    learner = AverageSmoothnessLearner(asl_best_result['L'], epsilon, xcombine, ycombine)
+    learner.train()
+    predictions, squared_loss = learner.test(xtest, ytest)
+    asl_best_result = {'L': asl_best_result['L'], 'epsilon': epsilon, 'xtrain': xcombine, 'ytrain': ycombine, 'xtest': xtest,
+                       'ytest': ytest,
+                       'predictions': predictions, 'squared_loss': squared_loss}
     # create gif for data visualisation
     print('plots saved\n')
     generate_asl_gif(filenames)

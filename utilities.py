@@ -14,6 +14,7 @@ def func_sin(x, std_noise=0):
     return np.sin(2 * pi * x) + std_noise * random.uniform(-1, 1)
 
 
+
 def create_sign_dataset(n, std_noise=0):
     # xs = random.random(n)
     xs = [random.uniform(-1, 1) for i in range(n)]
@@ -29,7 +30,7 @@ def create_sin_dataset(n, std_noise=0):
     return xs, ys
 
 
-def generate_experiment(func_type=0, n=32, std_noise=0.1):
+def generate_experiment(func_type=0, n1=32, n2=32, n3=32, std_noise=0.1):
     """
         :param std_noise: std of noise around func
         :param func_type: 0 = sin, 1 = sign
@@ -38,10 +39,10 @@ def generate_experiment(func_type=0, n=32, std_noise=0.1):
         """
     std_noise = 0
     if func_type == 0:
-        return create_sin_dataset(n, std_noise), create_sin_dataset(n)
+        return create_sin_dataset(n1, std_noise),create_sin_dataset(n2, std_noise), create_sin_dataset(n3)
 
     if func_type == 1:
-        return create_sign_dataset(n, std_noise), create_sign_dataset(n)
+        return create_sign_dataset(n1, std_noise), create_sign_dataset(n2, std_noise), create_sign_dataset(n3)
 
     print("Wrong func_type")
     exit(1)
