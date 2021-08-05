@@ -7,7 +7,7 @@ from pulp import LpMinimize, LpProblem, LpStatus, lpSum, LpVariable
 
 
 def func_sign(x, std_noise=0):
-    return np.sign(np.sin(2 * pi * x)) + std_noise * random.uniform(-1, 1)
+    return np.sign(np.sin(2 * pi * x *2)) + std_noise * random.uniform(-1, 1)
 
 
 def func_sin(x, std_noise=0):

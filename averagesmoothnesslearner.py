@@ -86,13 +86,7 @@ class AverageSmoothnessLearner:
         return predictions
 
     def test(self, xtest, ytest):
-        t0 = time.time()
         predictions = self.predict(xtest, ytest)
-        predict_time = time.time() - t0
-        # print("ASL prediction for %d inputs in %.3f s\n"
-        #       % (len(xtest), predict_time))
-
-        # self.plot_predictions(xtest, predictions)
         return predictions, calc_squared_loss(predictions, ytest)
 
     def plot_predictions(self, xtest, ytest, preds, func_type=0):

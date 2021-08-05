@@ -123,6 +123,3 @@ def experiment_mlp_krr(xlearn, ylearn, xvalid, yvalid, xtest, ytest, regularisat
 
 
 
-# if __name__ == '__main__':
-#     [xtrain, ytrain], [xtest, ytest] = utilities.generate_experiment(0, 32, 0.1)
-#     experiment_mlp_krr(xtrain, ytrain, xtest, ytest, 32, 0.1)

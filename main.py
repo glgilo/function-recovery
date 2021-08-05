@@ -4,11 +4,7 @@ from tweet_experiment import *
 import random
 
 
-# [xtrain, ytrain], [xtest, ytest] = utilities.generate_experiment(0, 32)
-# print(xtrain, ytrain, xtest, ytest)
-# utilities.test_linear_program()
 
-# def run_full_experiment():
 
 
 def plot_best_result():
@@ -65,7 +61,7 @@ if __name__ == '__main__':
     #  2. set n (default n=32)
     #  3. set L values and lambda values
 
-    func_type = 0
+    func_type = 1
     n_learn = 64
     n_valid = 64
     n_test = 64
@@ -86,9 +82,6 @@ if __name__ == '__main__':
     mlp_best_result, krr_best_result = experiment_mlp_krr(xlearn, ylearn, xvalid, yvalid, xtest, ytest,
                                                           regularisation_variables, func_type)
 
-    # asl_best_result = asl_experiment(xtrain, ytrain, xtest, ytest, [asl_best_result['L']], epsilon, func_type)
-    # mlp_best_result, krr_best_result = experiment_mlp_krr(xlearn, ylearn, xvalid, yvalid, xtest, ytest,
-    #                                                       [mlp_best_result['alpha'], krr_best_result['alpha']], func_type)
 
     # print and plot results
     compare_squared_loss()
